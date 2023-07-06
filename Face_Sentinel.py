@@ -44,14 +44,14 @@ def interval_observe():   # keyboard input interval observer
 
 
 def face_check():
-    log_off()
+    lock_out()
 
 
-def log_off():
+def lock_out():
     global app_exit
     if(debugging) : print("Log Off Function Triggered.")
     else:
-        subprocess.check_output('rundll32.exe user32.dll,LockWorkStation', shell=True)
+        subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
     app.quit()
 
 
