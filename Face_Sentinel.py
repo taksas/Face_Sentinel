@@ -17,7 +17,7 @@ def Debugging_Point():   # debugging point
     print("debug")   # SET BREAK POINT HERE
 
 
-def Interval_CountUp():
+def interval_countup():
     global interval
     global debugging
 
@@ -32,18 +32,34 @@ def onPress(key):   # keylog listener
     global interval
     interval = 0
 
-
-
 class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
     def __init__(self):
         super().__init__()
-        self.geometry("250x30+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
+        self.fonts = ("meiryo", 15)
+        self.geometry("350x30+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
+        self.setup_form()   # setup form
 
+    def setup_form(self):
+        global limit
+        self.textbox = customtkinter.CTkEntry(master=self, placeholder_text="Interval Limit(sec)", width=150, font=self.fonts)
+        self.textbox.place(x=0, y=0)
+        self.button = customtkinter.CTkButton(master=self, text="Apply", width=80, command=self.apply_button_function, font=self.fonts)
+        self.button.place(x=150, y=0)
 
-
-
+        self.limit_text1 = customtkinter.CTkLabel(master=self, text="Limit: ", font=self.fonts)
+        self.limit_text1.place(x=250, y=0)
+        self.limit_text2 = customtkinter.CTkLabel(master=self, text="10", font=self.fonts)
+        self.limit_text2.place(x=300, y=0)
+    
+    def apply_button_function(self):
+        global limit
+        new_limit = self.textbox.get()
+        self.textbox.delete(0, len(new_limit))
+        if(new_limit.isdecimal()):
+            limit = int(new_limit)
+            self.limit_text2.configure(text=str(new_limit))
 
 
 
@@ -59,7 +75,7 @@ if __name__ == "__main__":
     key_listener.start()
 
 
-    interval_counter= threading.Thread(target=Interval_CountUp)   # interval count up function
+    interval_counter= threading.Thread(target=interval_countup)   # interval count up function
     interval_counter.setDaemon(True)
     interval_counter.start()
     
