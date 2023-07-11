@@ -13,7 +13,7 @@ import Face_Checker
 interval = 0
 debugging = True
 limit = 10   # It may be changed by GUI input
-your_pics_dir = "C:\\FACES"
+your_pics_dir = "C:\\FACES\\Known"
 # ------------------------
 
 

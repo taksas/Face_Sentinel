@@ -2,10 +2,11 @@ import face_recognition
 import matplotlib.pyplot as plt
 import glob
 import cv2
+import datetime
 
 def face_check(YOUR_PICS_DIR, DEBUGGING):
 
-    camera_image = "image.jpg"
+    camera_image = "C:\\FACES\\Capture\\" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".jpg"
     # Open Camera
     cap = cv2.VideoCapture(0)
     # Capture Pic
