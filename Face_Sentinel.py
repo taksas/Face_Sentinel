@@ -7,6 +7,7 @@ import clr # Python.net
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
 
+
 # --- Global Variables ---
 interval = 0
 debugging = True
@@ -42,26 +43,28 @@ def interval_observe():   # keyboard input interval observer
         time.sleep(1)
         if(interval > limit):
             if(debugging): print("Limit exceeded.")
-            face_check()
+            face_check_result = face_check()
+            if(face_check_result != 0 ) : lock_out()
 
 
 
 def face_check():
-    lock_out()
+    return 0
 
 
 def lock_out():   # lock out from windows user session
     global app_exit
     if(debugging) : print("Log Off Function Triggered.")
-    else:
-        subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
+    subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
     app.quit()
 
 
-def Windows_Hello_Authorization():
+def Windows_Hello_Authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
     global debugging
+    
     auth = auth_api.WBF_API_Class()
     result = auth.Authorization()
+
     if(debugging): print("call_auth_result :",result)
     return result
 
@@ -73,7 +76,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         super().__init__()
         self.fonts = ("meiryo", 15)
         self.geometry("350x30+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
-        self.attributes("-topmost", 1)   # Display at the front
+        # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
 
@@ -95,13 +98,13 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global limit
         
-        auth_result = Windows_Hello_Authorization()
-        if(auth_result == 0):
-            new_limit = self.textbox.get()
-            self.textbox.delete(0, len(new_limit))
-            if(new_limit.isdecimal()):
-                limit = int(new_limit)
-                self.limit_text2.configure(text=str(new_limit))
+        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+
+        new_limit = self.textbox.get()
+        self.textbox.delete(0, len(new_limit))
+        if(new_limit.isdecimal()):
+            limit = int(new_limit)
+            self.limit_text2.configure(text=str(new_limit))
 
 
 
