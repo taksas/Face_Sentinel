@@ -56,7 +56,7 @@ def face_check(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
     )
 
     dists = face_recognition.face_distance(known_face_encodings, face_encoding_to_check)  # check similarity level
-    print(len(dists), "\n", dists)  # 3 [True, False, False]?
+    if(DEBUGGING): print(len(dists), "\n", dists)  # 3 [True, False, False]?
 
     true_count = 0
     ave_threshold = 0
