@@ -1,82 +1,63 @@
-import asyncio
-import io
-import os
-import sys
-import time
-import uuid
-import requests
-from urllib.parse import urlparse
-from io import BytesIO
-from PIL import Image, ImageDraw
-from azure.cognitiveservices.vision.face import FaceClient
-from msrest.authentication import CognitiveServicesCredentials
-from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, QualityForRecognition
+import face_recognition
+import matplotlib.pyplot as plt
+import glob
 import cv2
-from azure.storage.blob import BlobClient
 
-def face_check(VISION_KEY, VISION_ENDPOINT, COMPARE_ID):
+def face_check(YOUR_PICS_DIR, DEBUGGING):
 
-    
+    camera_image = "image.jpg"
     # Open Camera
     cap = cv2.VideoCapture(0)
     # Capture Pic
     ret, frame = cap.read()
     # Save Pic
-    cv2.imwrite("image.jpg", frame)
+    cv2.imwrite(camera_image, frame)
     # Close Camera
     cap.release()
 
-    
 
-    target_dir = null
+    path_list = glob.glob(YOUR_PICS_DIR + '\*')
 
-    # This key will serve all examples in this document.
-    KEY = VISION_KEY
+    # Load Known Faces
+    known_face_imgs = []
+    for path in path_list:
+        img = face_recognition.load_image_file(path)
+        known_face_imgs.append(img)
+    if(DEBUGGING): print("Loaded Known Images:", path_list)
 
-    # This endpoint will be used in all examples in this quickstart.
-    ENDPOINT = VISION_ENDPOINT
+    # Load Captured Checking Face
+    face_img_to_check = face_recognition.load_image_file(camera_image)
+
+    # face detection
+    known_face_locs = []
+    for img in known_face_imgs:
+        loc = face_recognition.face_locations(img, model="hog")
+        if len(loc) != 1:
+            if(DEBUGGING): print("Known Face Analyzation Error")
+            return -1
+        known_face_locs.append(loc)
+
+    face_loc_to_check = face_recognition.face_locations(face_img_to_check, model="hog")
+    if len(face_loc_to_check) != 1:
+        if(DEBUGGING): print("Checking Face Analyzation Error")
+        return -1
 
 
-    # Used in the Person Group Operations and Delete Person Group examples.
-    # You can call list_person_groups to print a list of preexisting PersonGroups.
-    # SOURCE_PERSON_GROUP_ID should be all lowercase and alphanumeric. For example, 'mygroupname' (dashes are OK).
-    PERSON_GROUP_ID = str(uuid.uuid4()) # assign a random ID (or name it anything)
 
-    # Create an authenticated FaceClient.
-    face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+    # face recognition
+    known_face_encodings = []
+    for img, loc in zip(known_face_imgs, known_face_locs):
+        (encoding,) = face_recognition.face_encodings(img, loc)
+        known_face_encodings.append(encoding)
+
+    (face_encoding_to_check,) = face_recognition.face_encodings(
+        face_img_to_check, face_loc_to_check
+    )
 
 
-    '''
-    Identify a face against a defined PersonGroup
-    '''
-    # Group image for testing against
-    test_image = target_dir
+    matches = face_recognition.compare_faces(known_face_encodings, face_encoding_to_check) # check whether matching
+    print(matches)  # [True, False, False]?
 
-    print('Pausing for 10 seconds to avoid triggering rate limit on free account...')
-    time.sleep (10)
-
-    # Detect faces
-    face_ids = []
-    # We use detection model 3 to get better performance, recognition model 4 to support quality for recognition attribute.
-    faces = face_client.face.detect_with_url(test_image, detection_model='detection_03', recognition_model='recognition_04', return_face_attributes=['qualityForRecognition'])
-    for face in faces:
-        # Only take the face if it is of sufficient quality.
-        if face.face_attributes.quality_for_recognition == QualityForRecognition.high or face.face_attributes.quality_for_recognition == QualityForRecognition.medium:
-            face_ids.append(face.face_id)
-
-    # Identify faces
-    results = face_client.face.identify(face_ids, PERSON_GROUP_ID)
-    print('Identifying faces in image')
-    if not results:
-        print('No person identified in the person group')
-    for identifiedFace in results:
-        if len(identifiedFace.candidates) > 0:
-            print('Person is identified for face ID {} in image, with a confidence of {}.'.format(identifiedFace.face_id, identifiedFace.candidates[0].confidence)) # Get topmost confidence score
-
-            # Verify faces
-            verify_result = face_client.face.verify_face_to_person(identifiedFace.face_id, identifiedFace.candidates[0].person_id, PERSON_GROUP_ID)
-            print('verification result: {}. confidence: {}'.format(verify_result.is_identical, verify_result.confidence))
-            if(verify_result.is_identical == COMPARE_ID) : return 0
-        else:
-            print('No person identified for face ID {} in image.'.format(identifiedFace.face_id))
+    for x in matches:
+        if(x == True) : return 0
     return 1

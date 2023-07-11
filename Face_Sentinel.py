@@ -1,4 +1,4 @@
-import os
+import sys
 from pynput.keyboard import Listener
 import time
 import threading
@@ -7,22 +7,13 @@ import subprocess
 import clr # Python.net
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
-
-
-
-# --- Secret Variables ---
-KEY = os.environ["VISION_KEY"]
-ENDPOINT = os.environ["VISION_ENDPOINT"]
-# ------------------------
-
-
-
+import Face_Checker
 
 # --- Global Variables ---
 interval = 0
 debugging = True
-limit = 300   # It may be changed by GUI input
-compare_id = 0  # Your Person ID in Azure Face API
+limit = 10   # It may be changed by GUI input
+your_pics_dir = "C:\\FACES"
 # ------------------------
 
 
@@ -51,13 +42,20 @@ def onPress(key):   # keylog listener
 def interval_observe():   # keyboard input interval observer
     global interval
     global limit
-    global compare_id
+    global debugging
+    global your_pics_dir
+
     while True:
         time.sleep(1)
         if(interval > limit):
+            limit_temp = limit
+            limit = sys.maxsize
             if(debugging): print("Limit exceeded.")
-            face_check_result = 0
+            face_check_result = Face_Checker.face_check(your_pics_dir, debugging)
             if(face_check_result != 0 ) : lock_out()
+            else:
+                limit = limit_temp
+                interval = 0
 
 
 
