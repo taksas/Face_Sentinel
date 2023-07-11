@@ -92,6 +92,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
     def __init__(self):
         super().__init__()
         self.fonts = ("meiryo", 15)
+        self.iconbitmap('Assets/headandlock.ico')
         self.geometry("350x120+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
