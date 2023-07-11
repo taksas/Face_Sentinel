@@ -1,3 +1,4 @@
+import os
 from pynput.keyboard import Listener
 import time
 import threading
@@ -8,11 +9,22 @@ clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
 
 
+
+# --- Secret Variables ---
+KEY = os.environ["VISION_KEY"]
+ENDPOINT = os.environ["VISION_ENDPOINT"]
+# ------------------------
+
+
+
+
 # --- Global Variables ---
 interval = 0
 debugging = True
 limit = 300   # It may be changed by GUI input
+compare_id = 0  # Your Person ID in Azure Face API
 # ------------------------
+
 
 
 
@@ -39,17 +51,16 @@ def onPress(key):   # keylog listener
 def interval_observe():   # keyboard input interval observer
     global interval
     global limit
+    global compare_id
     while True:
         time.sleep(1)
         if(interval > limit):
             if(debugging): print("Limit exceeded.")
-            face_check_result = face_check()
+            face_check_result = 0
             if(face_check_result != 0 ) : lock_out()
 
 
 
-def face_check():
-    return 0
 
 
 def lock_out():   # lock out from windows user session
