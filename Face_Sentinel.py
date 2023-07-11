@@ -16,7 +16,7 @@ interval = 0
 
 # ------ Configure -------
 debugging = True
-limit = 10   # It may be changed by GUI input
+limit = 100   # It may be changed by GUI input
 your_pics_dir = "C:\\FACES\\Known"
 tolerate_target_face__errors = False
 rigidity = 100
@@ -88,7 +88,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
     def __init__(self):
         super().__init__()
         self.fonts = ("meiryo", 15)
-        self.geometry("350x30+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
+        self.geometry("350x90+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
@@ -105,6 +105,16 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.limit_text1.place(x=250, y=0)
         self.limit_text2 = customtkinter.CTkLabel(master=self, text=str(limit), font=self.fonts)
         self.limit_text2.place(x=300, y=0)
+
+        self.rigidity_textbox = customtkinter.CTkEntry(master=self, placeholder_text="Rigidity:" + str(rigidity) + "%", width=120, font=self.fonts)
+        self.rigidity_textbox.place(x=0, y=30)
+        self.rigidity_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.rigidity_apply_button_function, font=self.fonts)
+        self.rigidity_apply_button.place(x=120, y=30)
+
+        self.threshold_textbox = customtkinter.CTkEntry(master=self, placeholder_text="Threshold:" + str(threshold), width=120, font=self.fonts)
+        self.threshold_textbox.place(x=175, y=30)
+        self.threshold_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.threshold_apply_button_function, font=self.fonts)
+        self.threshold_apply_button.place(x=295, y=30)
     
 
     def apply_button_function(self):
@@ -118,6 +128,32 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         if(new_limit.isdecimal()):
             limit = int(new_limit)
             self.limit_text2.configure(text=str(new_limit))
+
+
+    def rigidity_apply_button_function(self):
+        global debugging
+        global rigidity
+        
+        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+
+        new_rigidity = self.rigidity_textbox.get()
+        self.rigidity_textbox.delete(0, len(new_rigidity))
+        if(new_rigidity.isdecimal()):
+            rigidity = int(new_rigidity)
+            self.rigidity_textbox.configure(placeholder_text="Rigidity:" + str(rigidity) + "%")
+
+
+    def threshold_apply_button_function(self):
+        global debugging
+        global threshold
+        
+        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+
+        new_threshold = self.threshold_textbox.get()
+        self.threshold_textbox.delete(0, len(new_threshold))
+        if(isinstance(float(new_threshold), float)):
+            threshold = float(new_threshold)
+            self.threshold_textbox.configure(placeholder_text="threshold:" + str(threshold))
 
 
 

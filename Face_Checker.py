@@ -61,6 +61,6 @@ def face_check(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
     true_count = 0
     for x in dists:
         if(x < THRESHOLD) : true_count += 1
-    if(DEBUGGING): print("RIGIDITY:",RIGIDITY,"%")
+    if(DEBUGGING): print("RIGIDITY:",RIGIDITY,"%\n", "THRESHOLD:", THRESHOLD)
     if( true_count / len(dists) >= RIGIDITY*0.01 ): return 0
     else: return 1
