@@ -1,5 +1,4 @@
 import sys
-from pynput.keyboard import Listener
 import time
 import threading
 import customtkinter
@@ -9,11 +8,19 @@ clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
 import Face_Checker
 
+
 # --- Global Variables ---
 interval = 0
+# ------------------------
+
+
+# ------ Configure -------
 debugging = True
 limit = 10   # It may be changed by GUI input
 your_pics_dir = "C:\\FACES\\Known"
+tolerate_target_face__errors = False
+rigidity = 100
+threshold = 0.5
 # ------------------------
 
 
@@ -34,16 +41,13 @@ def interval_countup():
         if(debugging): print(interval)
 
 
-def onPress(key):   # keylog listener
-    global interval
-    interval = 0
-
 
 def interval_observe():   # keyboard input interval observer
     global interval
     global limit
     global debugging
     global your_pics_dir
+    global tolerate_target_face__errors
 
     while True:
         time.sleep(1)
@@ -51,8 +55,8 @@ def interval_observe():   # keyboard input interval observer
             limit_temp = limit
             limit = sys.maxsize
             if(debugging): print("Limit exceeded.")
-            face_check_result = Face_Checker.face_check(your_pics_dir, debugging)
-            if(face_check_result != 0 ) : lock_out()
+            face_check_result = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
+            if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )) : lock_out()
             else:
                 limit = limit_temp
                 interval = 0
@@ -121,13 +125,11 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
 if __name__ == "__main__":
     global app
-    debugging_thread = threading.Thread(target=Debugging_Point)   # debugging point
-    debugging_thread.setDaemon(True)
-    debugging_thread.start()
 
-    key_listener= Listener(on_press=onPress)   # keylog listener
-    key_listener.setDaemon(True)
-    key_listener.start()
+    if(debugging):
+        debugging_thread = threading.Thread(target=Debugging_Point)   # debugging point
+        debugging_thread.setDaemon(True)
+        debugging_thread.start()
 
 
     interval_counter= threading.Thread(target=interval_countup)   # interval count up function

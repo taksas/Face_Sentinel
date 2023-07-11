@@ -4,7 +4,7 @@ import glob
 import cv2
 import datetime
 
-def face_check(YOUR_PICS_DIR, DEBUGGING):
+def face_check(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
 
     camera_image = "C:\\FACES\\Capture\\" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".jpg"
     # Open Camera
@@ -26,7 +26,7 @@ def face_check(YOUR_PICS_DIR, DEBUGGING):
         known_face_imgs.append(img)
     if(DEBUGGING): print("Loaded Known Images:", path_list)
 
-    # Load Captured Checking Face
+    # Load Captured Target Face
     face_img_to_check = face_recognition.load_image_file(camera_image)
 
     # face detection
@@ -40,8 +40,8 @@ def face_check(YOUR_PICS_DIR, DEBUGGING):
 
     face_loc_to_check = face_recognition.face_locations(face_img_to_check, model="hog")
     if len(face_loc_to_check) != 1:
-        if(DEBUGGING): print("Checking Face Analyzation Error")
-        return -1
+        if(DEBUGGING): print("Target Face Analyzation Error")
+        return -2
 
 
 
@@ -55,10 +55,12 @@ def face_check(YOUR_PICS_DIR, DEBUGGING):
         face_img_to_check, face_loc_to_check
     )
 
+    dists = face_recognition.face_distance(known_face_encodings, face_encoding_to_check)  # check similarity level
+    print(len(dists), "\n", dists)  # 3 [True, False, False]?
 
-    matches = face_recognition.compare_faces(known_face_encodings, face_encoding_to_check) # check whether matching
-    print(matches)  # [True, False, False]?
-
-    for x in matches:
-        if(x == True) : return 0
-    return 1
+    true_count = 0
+    for x in dists:
+        if(x < THRESHOLD) : true_count += 1
+    if(DEBUGGING): print("RIGIDITY:",RIGIDITY,"%")
+    if( true_count / len(dists) >= RIGIDITY*0.01 ): return 0
+    else: return 1
