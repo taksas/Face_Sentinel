@@ -1,0 +1,2 @@
+C:\Users\TAKUMI\source\repos\WBF_API_ClassLibrary\obj\Debug\WBF_API_ClassLibrary.csproj.AssemblyReference.cache
+C:\Users\TAKUMI\source\repos\WBF_API_ClassLibrary\obj\Debug\WBF_API_ClassLibrary.csproj.CoreCompileInputs.cache
