@@ -3,10 +3,14 @@ import time
 import threading
 import customtkinter
 import subprocess
+import clr # Python.net
+clr.AddReference("WBF_API_ClassLibrary")
+import WBF_API_ClassLibrary as auth_api
+auth = auth_api.WBF_API_Class()
 
 # --- Global Variables ---
 interval = 0
-debugging = False
+debugging = True
 limit = 3   # It may be changed by GUI input
 # ------------------------
 
@@ -44,10 +48,11 @@ def interval_observe():   # keyboard input interval observer
 
 
 def face_check():
-    lock_out()
+    print("FC")
+    # lock_out()
 
 
-def lock_out():
+def lock_out():   # lock out from windows user session
     global app_exit
     if(debugging) : print("Log Off Function Triggered.")
     else:
@@ -78,7 +83,11 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.limit_text2.place(x=300, y=0)
     
     def apply_button_function(self):
+        global debugging
         global limit
+        global auth
+
+        if(debugging): print("callauth ",(int)(auth.Authorization()))
         new_limit = self.textbox.get()
         self.textbox.delete(0, len(new_limit))
         if(new_limit.isdecimal()):
