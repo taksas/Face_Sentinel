@@ -55,11 +55,15 @@ def interval_observe():   # keyboard input interval observer
             limit_temp = limit
             limit = sys.maxsize
             if(debugging): print("Limit exceeded.")
-            face_check_result = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
+            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
             if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )) : lock_out()
             else:
                 limit = limit_temp
                 interval = 0
+                app.last_rigidity_text.configure(text="Last Rigidity: " + str(last_rigidity) + "%")
+                app.ave_threshold_text.configure(text="Ave Threshold: " + str(ave_threshold))
+                app.min_threshold_text.configure(text="Min Threshold: " + str(min_threshold))
+                app.max_threshold_text.configure(text="Max Threshold: " + str(max_threshold))
 
 
 
@@ -88,7 +92,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
     def __init__(self):
         super().__init__()
         self.fonts = ("meiryo", 15)
-        self.geometry("350x90+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
+        self.geometry("350x120+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
@@ -115,7 +119,20 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.threshold_textbox.place(x=175, y=30)
         self.threshold_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.threshold_apply_button_function, font=self.fonts)
         self.threshold_apply_button.place(x=295, y=30)
-    
+
+        self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="Last Rigidity: ", font=self.fonts)
+        self.last_rigidity_text.place(x=0, y=60)
+
+        self.ave_threshold_text = customtkinter.CTkLabel(master=self, text="Ave Threshold: ", font=self.fonts)
+        self.ave_threshold_text.place(x=175, y=60)
+
+        self.min_threshold_text = customtkinter.CTkLabel(master=self, text="Min Threshold: ", font=self.fonts)
+        self.min_threshold_text.place(x=0, y=90)
+
+        self.max_threshold_text = customtkinter.CTkLabel(master=self, text="Max Threshold: ", font=self.fonts)
+        self.max_threshold_text.place(x=175, y=90)
+
+
 
     def apply_button_function(self):
         global debugging
@@ -153,7 +170,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.threshold_textbox.delete(0, len(new_threshold))
         if(isinstance(float(new_threshold), float)):
             threshold = float(new_threshold)
-            self.threshold_textbox.configure(placeholder_text="threshold:" + str(threshold))
+            self.threshold_textbox.configure(placeholder_text="Threshold:" + str(threshold))
 
 
 

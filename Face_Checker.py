@@ -35,13 +35,13 @@ def face_check(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
         loc = face_recognition.face_locations(img, model="hog")
         if len(loc) != 1:
             if(DEBUGGING): print("Known Face Analyzation Error")
-            return -1
+            return -1, -1, -1, -1, -1
         known_face_locs.append(loc)
 
     face_loc_to_check = face_recognition.face_locations(face_img_to_check, model="hog")
     if len(face_loc_to_check) != 1:
         if(DEBUGGING): print("Target Face Analyzation Error")
-        return -2
+        return -2, -1, -1, -1, -1
 
 
 
@@ -59,8 +59,16 @@ def face_check(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
     print(len(dists), "\n", dists)  # 3 [True, False, False]?
 
     true_count = 0
+    ave_threshold = 0
+    min_threshold = 1
+    max_threshold = 0
     for x in dists:
         if(x < THRESHOLD) : true_count += 1
+        ave_threshold += x
+        if(x < min_threshold): min_threshold = x
+        if(x > max_threshold): max_threshold = x
+
     if(DEBUGGING): print("RIGIDITY:",RIGIDITY,"%\n", "THRESHOLD:", THRESHOLD)
-    if( true_count / len(dists) >= RIGIDITY*0.01 ): return 0
-    else: return 1
+    last_rigidity = true_count / len(dists)
+    if( last_rigidity >= RIGIDITY*0.01 ): return 0, last_rigidity*100, ave_threshold/len(dists), min_threshold, max_threshold
+    else: return 1, last_rigidity*100, ave_threshold/len(dists), min_threshold, max_threshold
