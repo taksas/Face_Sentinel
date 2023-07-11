@@ -6,12 +6,11 @@ import subprocess
 import clr # Python.net
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
-auth = auth_api.WBF_API_Class()
 
 # --- Global Variables ---
 interval = 0
 debugging = True
-limit = 3   # It may be changed by GUI input
+limit = 300   # It may be changed by GUI input
 # ------------------------
 
 
@@ -48,8 +47,7 @@ def interval_observe():   # keyboard input interval observer
 
 
 def face_check():
-    print("FC")
-    # lock_out()
+    lock_out()
 
 
 def lock_out():   # lock out from windows user session
@@ -60,8 +58,17 @@ def lock_out():   # lock out from windows user session
     app.quit()
 
 
+def Windows_Hello_Authorization():
+    global debugging
+    auth = auth_api.WBF_API_Class()
+    result = auth.Authorization()
+    if(debugging): print("call_auth_result :",result)
+    return result
+
+
 
 class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
+
     def __init__(self):
         super().__init__()
         self.fonts = ("meiryo", 15)
@@ -69,6 +76,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
+
 
     def setup_form(self):
         global limit
@@ -82,17 +90,19 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.limit_text2 = customtkinter.CTkLabel(master=self, text=str(limit), font=self.fonts)
         self.limit_text2.place(x=300, y=0)
     
+
     def apply_button_function(self):
         global debugging
         global limit
-        global auth
+        
+        auth_result = Windows_Hello_Authorization()
+        if(auth_result == 0):
+            new_limit = self.textbox.get()
+            self.textbox.delete(0, len(new_limit))
+            if(new_limit.isdecimal()):
+                limit = int(new_limit)
+                self.limit_text2.configure(text=str(new_limit))
 
-        if(debugging): print("callauth ",(int)(auth.Authorization()))
-        new_limit = self.textbox.get()
-        self.textbox.delete(0, len(new_limit))
-        if(new_limit.isdecimal()):
-            limit = int(new_limit)
-            self.limit_text2.configure(text=str(new_limit))
 
 
 
