@@ -20,7 +20,7 @@ import Face_Checker
 debugging = True
 limit = 100   # It may be changed by GUI input
 your_pics_dir = "C:\\FACES\\Known"
-tolerate_target_face__errors = False
+tolerate_target_face__errors = True
 rigidity = 100
 threshold = 0.5
 # ------------------------
@@ -202,13 +202,16 @@ def create_menu():
         app.deiconify()
 
     def destroy_app():
+        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
         app.destroy()
         
     menu=(item('Show', show_app), item('Quit', destroy_app))
     icon=pystray.Icon("name", Image.open('Assets/headandlock.ico'), "My System Tray Icon", menu)
     icon.run()
 
-    
+
+def on_closing():
+    app.withdraw()
 
 
 
@@ -234,5 +237,5 @@ if __name__ == "__main__":
     create_menu_variable.start()
     
     
-    
+    app.protocol("WM_DELETE_WINDOW", on_closing)
     app.mainloop()
