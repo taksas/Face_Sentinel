@@ -4,14 +4,16 @@ import threading
 import customtkinter
 import subprocess
 import clr # Python.net
+from pystray import MenuItem as item
+import pystray
+from PIL import Image, ImageTk
+
+
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
 import Face_Checker
 
 
-# --- Global Variables ---
-interval = 0
-# ------------------------
 
 
 # ------ Configure -------
@@ -26,64 +28,7 @@ threshold = 0.5
 
 
 
-def Debugging_Point():   # debugging point
-    time.sleep(20)
-    print("debug")   # SET BREAK POINT HERE
 
-
-def interval_countup():
-    global interval
-    global debugging
-
-    while True:
-        interval += 1
-        time.sleep(1)
-        if(debugging): print(interval)
-
-
-
-def interval_observe():   # keyboard input interval observer
-    global interval
-    global limit
-    global debugging
-    global your_pics_dir
-    global tolerate_target_face__errors
-
-    while True:
-        time.sleep(1)
-        if(interval > limit):
-            limit_temp = limit
-            limit = sys.maxsize
-            if(debugging): print("Limit exceeded.")
-            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
-            if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )) : lock_out()
-            else:
-                limit = limit_temp
-                interval = 0
-                app.last_rigidity_text.configure(text="Last Rigidity: " + str(last_rigidity) + "%")
-                app.ave_threshold_text.configure(text="Ave Threshold: " + str(ave_threshold))
-                app.min_threshold_text.configure(text="Min Threshold: " + str(min_threshold))
-                app.max_threshold_text.configure(text="Max Threshold: " + str(max_threshold))
-
-
-
-
-
-def lock_out():   # lock out from windows user session
-    global app_exit
-    if(debugging) : print("Log Off Function Triggered.")
-    subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
-    app.quit()
-
-
-def Windows_Hello_Authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
-    global debugging
-    
-    auth = auth_api.WBF_API_Class()
-    result = auth.Authorization()
-
-    if(debugging): print("call_auth_result :",result)
-    return result
 
 
 
@@ -177,8 +122,98 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
 
 
+
+
+
+
+
+# --- Global Variables ---
+interval = 0
+app = App()
+# ------------------------
+
+
+
+
+
+
+def Debugging_Point():   # debugging point
+    time.sleep(20)
+    print("debug")   # SET BREAK POINT HERE
+
+
+def interval_countup():
+    global interval
+    global debugging
+
+    while True:
+        interval += 1
+        time.sleep(1)
+        if(debugging): print(interval)
+
+
+
+def interval_observe():   # keyboard input interval observer
+    global interval
+    global limit
+    global debugging
+    global your_pics_dir
+    global tolerate_target_face__errors
+
+    while True:
+        time.sleep(1)
+        if(interval > limit):
+            limit_temp = limit
+            limit = sys.maxsize
+            if(debugging): print("Limit exceeded.")
+            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
+            if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )) : lock_out()
+            else:
+                limit = limit_temp
+                interval = 0
+                app.last_rigidity_text.configure(text="Last Rigidity: " + str(last_rigidity) + "%")
+                app.ave_threshold_text.configure(text="Ave Threshold: " + str(ave_threshold))
+                app.min_threshold_text.configure(text="Min Threshold: " + str(min_threshold))
+                app.max_threshold_text.configure(text="Max Threshold: " + str(max_threshold))
+
+
+
+
+
+def lock_out():   # lock out from windows user session
+    if(debugging) : print("Log Off Function Triggered.")
+    subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
+    app.quit()
+
+
+def Windows_Hello_Authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
+    global debugging
+    
+    auth = auth_api.WBF_API_Class()
+    result = auth.Authorization()
+
+    if(debugging): print("call_auth_result :",result)
+    return result
+
+
+def create_menu():
+    app.withdraw()
+    def show_app():
+        app.deiconify()
+
+    def destroy_app():
+        app.destroy()
+        
+    menu=(item('Show', show_app), item('Quit', destroy_app))
+    icon=pystray.Icon("name", Image.open('Assets/headandlock.ico'), "My System Tray Icon", menu)
+    icon.run()
+
+    
+
+
+
+
 if __name__ == "__main__":
-    global app
 
     if(debugging):
         debugging_thread = threading.Thread(target=Debugging_Point)   # debugging point
@@ -193,6 +228,11 @@ if __name__ == "__main__":
     interval_observer= threading.Thread(target=interval_observe)   # keyboard input interval observe function
     interval_observer.setDaemon(True)
     interval_observer.start()
+
+    create_menu_variable= threading.Thread(target=create_menu)   # keyboard input interval observe function
+    create_menu_variable.setDaemon(True)
+    create_menu_variable.start()
     
-    app = App()
+    
+    
     app.mainloop()
