@@ -6,9 +6,10 @@ import subprocess
 import clr # Python.net
 from pystray import MenuItem as item
 import pystray
-from PIL import Image, ImageTk
+from PIL import Image
 import configparser
 from distutils.util import strtobool
+import datetime
 
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
@@ -42,7 +43,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         super().__init__()
         self.fonts = ("meiryo", 15)
         self.iconbitmap('Assets/headandlock.ico')
-        self.geometry("400x210+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
+        self.geometry("400x215+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
@@ -77,14 +78,17 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="Last Pass Rate: ", font=self.fonts)
         self.last_rigidity_text.place(x=210, y=60)
 
-        self.ave_threshold_text = customtkinter.CTkLabel(master=self, text="Ave Threshold: ", font=self.fonts)
+        self.ave_threshold_text = customtkinter.CTkLabel(master=self, text="Ave Similarity: ", font=self.fonts)
         self.ave_threshold_text.place(x=210, y=90)
 
-        self.min_threshold_text = customtkinter.CTkLabel(master=self, text="Min Threshold: ", font=self.fonts)
+        self.min_threshold_text = customtkinter.CTkLabel(master=self, text="Min Similarity: ", font=self.fonts)
         self.min_threshold_text.place(x=210, y=120)
 
-        self.max_threshold_text = customtkinter.CTkLabel(master=self, text="Max Threshold: ", font=self.fonts)
+        self.max_threshold_text = customtkinter.CTkLabel(master=self, text="Max Similarity: ", font=self.fonts)
         self.max_threshold_text.place(x=210, y=150)
+
+        self.last_updated_text = customtkinter.CTkLabel(master=self, text="Last Updated: ", font=self.fonts)
+        self.last_updated_text.place(x=210, y=180)
 
 
 
@@ -189,9 +193,10 @@ def interval_observe():   # keyboard input interval observer
                 limit = limit_temp
                 interval = 0
                 app.last_rigidity_text.configure(text="Last Pass Rate: " + str(last_rigidity) + "%")
-                app.ave_threshold_text.configure(text="Ave Threshold: " + str(round(ave_threshold, 5)))
-                app.min_threshold_text.configure(text="Min Threshold: " + str(round(min_threshold, 5)))
-                app.max_threshold_text.configure(text="Max Threshold: " + str(round(max_threshold, 5)))
+                app.ave_threshold_text.configure(text="Ave Similarity: " + str(round(ave_threshold, 5)))
+                app.min_threshold_text.configure(text="Min Similarity: " + str(round(min_threshold, 5)))
+                app.max_threshold_text.configure(text="Max Similarity: " + str(round(max_threshold, 5)))
+                app.last_updated_text.configure(text="Last Updated: " + datetime.datetime.now().strftime('%H:%M.%S'))
 
 
 def exit_processes():
