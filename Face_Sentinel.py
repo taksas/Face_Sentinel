@@ -42,7 +42,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         super().__init__()
         self.fonts = ("meiryo", 15)
         self.iconbitmap('Assets/headandlock.ico')
-        self.geometry("350x120+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
+        self.geometry("350x210+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
@@ -50,6 +50,11 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
     def setup_form(self):
         global limit
+
+        logo_image = customtkinter.CTkImage(Image.open('Assets/FS_logo.png'),size=(64, 64))
+        self.logo_label = customtkinter.CTkLabel(master=self, text="",image=logo_image, compound="left", font=self.fonts)
+        self.logo_label.place(x=0, y=0)
+
         self.textbox = customtkinter.CTkEntry(master=self, placeholder_text="Interval Limit(sec)", width=150, font=self.fonts)
         self.textbox.place(x=0, y=0)
         self.button = customtkinter.CTkButton(master=self, text="Apply", width=70, command=self.apply_button_function, font=self.fonts)
