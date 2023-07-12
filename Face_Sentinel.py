@@ -53,29 +53,35 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
     def setup_form(self):
         global limit
 
+        # main logo
         logo_image = customtkinter.CTkImage(Image.open('Assets/FS_logo.png'),size=(250, 50))
         self.logo_label = customtkinter.CTkLabel(master=self, text="",image=logo_image, font=self.fonts)
         self.logo_label.place(x=67, y=4)
 
+        # interval widgets
         self.textbox = customtkinter.CTkEntry(master=self, placeholder_text="Interval: " + str(limit) + "s", width=120, font=self.fonts)
         self.textbox.place(x=5, y=60)
         self.button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.apply_button_function, font=self.fonts)
         self.button.place(x=130, y=60)
 
+        # rigidity widgets
         self.rigidity_textbox = customtkinter.CTkEntry(master=self, placeholder_text="Rigidity:" + str(rigidity) + "%", width=120, font=self.fonts)
         self.rigidity_textbox.place(x=5, y=95)
         self.rigidity_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.rigidity_apply_button_function, font=self.fonts)
         self.rigidity_apply_button.place(x=130, y=95)
 
+        # threshold widgets
         self.threshold_textbox = customtkinter.CTkEntry(master=self, placeholder_text="Threshold:" + str(threshold), width=120, font=self.fonts)
         self.threshold_textbox.place(x=5, y=130)
         self.threshold_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.threshold_apply_button_function, font=self.fonts)
         self.threshold_apply_button.place(x=130, y=130)
 
+        # tolerate face errors widget
         self.tolerate_target_face__errors_toggle_button = customtkinter.CTkButton(master=self, text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)), width=175, command=self.tolerate_target_face__errors_toggle_button_function, font=self.fonts)
         self.tolerate_target_face__errors_toggle_button.place(x=5, y=165)
 
 
+        # --- log widgets ---
         self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="Last Pass Rate: ", font=self.fonts)
         self.last_rigidity_text.place(x=210, y=60)
 
@@ -90,6 +96,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
         self.last_updated_text = customtkinter.CTkLabel(master=self, text="Last Updated: ", font=self.fonts)
         self.last_updated_text.place(x=210, y=180)
+        # --- log widgets ---
 
 
 
@@ -136,10 +143,9 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global tolerate_target_face__errors
         if(tolerate_target_face__errors == True):
             tolerate_target_face__errors = False
-            self.tolerate_target_face__errors_toggle_button.configure(text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)))
         else:
             tolerate_target_face__errors = True
-            self.tolerate_target_face__errors_toggle_button.configure(text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)))
+        self.tolerate_target_face__errors_toggle_button.configure(text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)))
 
 
 
