@@ -4,9 +4,10 @@ import glob
 import cv2
 import datetime
 
-def Authorization(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
 
-    camera_image = "C:\\FACES\\Capture\\" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".jpg"
+
+def Camera_Capture(CAPTURE_PICS_DIR):
+    camera_image = CAPTURE_PICS_DIR + "\\" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".jpg"
     # Open Camera
     cap = cv2.VideoCapture(0)
     # Capture Pic
@@ -15,11 +16,16 @@ def Authorization(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
     cv2.imwrite(camera_image, frame)
     # Close Camera
     cap.release()
+    return camera_image
 
 
-    path_list = glob.glob(YOUR_PICS_DIR + '\*')
+
+def Authorization(YOUR_PICS_DIR, CAPTURE_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
+
+    
 
     # Load Known Faces
+    path_list = glob.glob(YOUR_PICS_DIR + '\*')
     known_face_imgs = []
     for path in path_list:
         img = face_recognition.load_image_file(path)
@@ -27,7 +33,8 @@ def Authorization(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
     if(DEBUGGING): print("Loaded Known Images:", path_list)
 
     # Load Captured Target Face
-    face_img_to_check = face_recognition.load_image_file(camera_image)
+    target_image = Camera_Capture(CAPTURE_PICS_DIR)
+    face_img_to_check = face_recognition.load_image_file(target_image)
 
     # face detection
     known_face_locs = []
@@ -44,7 +51,6 @@ def Authorization(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
         return -2, -1, -1, -1, -1
 
 
-
     # face recognition
     known_face_encodings = []
     for img, loc in zip(known_face_imgs, known_face_locs):
@@ -58,10 +64,12 @@ def Authorization(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
     dists = face_recognition.face_distance(known_face_encodings, face_encoding_to_check)  # check similarity level
     if(DEBUGGING): print(len(dists), "\n", dists)  # 3 [True, False, False]?
 
+
     true_count = 0
     ave_threshold = 0
     min_threshold = 1
     max_threshold = 0
+    
     for x in dists:
         if(x < THRESHOLD) : true_count += 1
         ave_threshold += x
