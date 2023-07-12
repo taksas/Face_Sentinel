@@ -7,7 +7,8 @@ import clr # Python.net
 from pystray import MenuItem as item
 import pystray
 from PIL import Image, ImageTk
-
+import configparser
+from distutils.util import strtobool
 
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
@@ -17,12 +18,15 @@ import Face_Checker
 
 
 # ------ Configure -------
-debugging = True
-limit = 100   # It may be changed by GUI input
-your_pics_dir = "C:\\FACES\\Known"
-tolerate_target_face__errors = True
-rigidity = 100
-threshold = 0.5
+config = configparser.ConfigParser()
+config.read('./config.ini')
+
+debugging = strtobool(config['settings']['debugging'])
+limit = int((config['settings']['limit']))   # It may be changed by GUI input
+your_pics_dir = (config['settings']['your_pics_dir'])
+tolerate_target_face__errors = strtobool(config['settings']['tolerate_target_face__errors'])
+rigidity = int((config['settings']['rigidity']))
+threshold = float((config['settings']['threshold']))
 # ------------------------
 
 
@@ -196,6 +200,21 @@ def Windows_Hello_Authorization(): # Windows Security Challenge Function, It cal
     return result
 
 
+
+def config_save():
+    global debugging
+
+    config.set('settings', 'debugging', str(debugging))
+    config.set('settings', 'limit', str(limit))
+    config.set('settings', 'your_pics_dir', str(your_pics_dir))
+    config.set('settings', 'tolerate_target_face__errors', str(tolerate_target_face__errors))
+    config.set('settings', 'rigidity', str(rigidity))
+    config.set('settings', 'threshold', str(threshold))
+    with open('./config.ini', 'w') as f:
+        config.write(f)
+    if(debugging): print("Config.ini Saved")
+
+
 def create_menu():
     app.withdraw()
     def show_app():
@@ -203,7 +222,9 @@ def create_menu():
 
     def destroy_app():
         if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+        config_save()
         app.destroy()
+        sys.exit()
         
     menu=(item('Show', show_app), item('Quit', destroy_app))
     icon=pystray.Icon("name", Image.open('Assets/headandlock.ico'), "My System Tray Icon", menu)
