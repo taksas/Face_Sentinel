@@ -13,7 +13,7 @@ import datetime
 
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
-import Face_Checker
+import Main_Authorization
 
 
 
@@ -184,7 +184,7 @@ def interval_observe():   # keyboard input interval observer
         if(interval > limit):
             interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
-            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
+            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Main_Authorization.Authorization(your_pics_dir, rigidity, threshold, debugging)
             if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )):
                 interval = 0
                 lock_out()

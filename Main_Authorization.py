@@ -4,7 +4,7 @@ import glob
 import cv2
 import datetime
 
-def face_check(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
+def Authorization(YOUR_PICS_DIR, RIGIDITY, THRESHOLD, DEBUGGING):
 
     camera_image = "C:\\FACES\\Capture\\" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".jpg"
     # Open Camera
