@@ -182,15 +182,13 @@ def interval_observe():   # keyboard input interval observer
     while True:
         time.sleep(1)
         if(interval > limit):
-            limit_temp = limit
-            limit = sys.maxsize
+            interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
             face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
             if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )):
-                limit = limit_temp
+                interval = 0
                 lock_out()
             else:
-                limit = limit_temp
                 interval = 0
                 app.last_rigidity_text.configure(text="Last Pass Rate: " + str(last_rigidity) + "%")
                 app.ave_threshold_text.configure(text="Ave Similarity: " + str(round(ave_threshold, 5)))
@@ -242,7 +240,7 @@ def create_menu():
         
         
     menu=(item('Show', show_app), item('Quit', destroy_app))
-    icon=pystray.Icon("name", Image.open('Assets/headandlock.ico'), "My System Tray Icon", menu)
+    icon=pystray.Icon("name", Image.open('Assets/headandlock.ico'), "Face Sentinel", menu)
     icon.run()
 
 
