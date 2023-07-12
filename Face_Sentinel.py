@@ -42,7 +42,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         super().__init__()
         self.fonts = ("meiryo", 15)
         self.iconbitmap('Assets/headandlock.ico')
-        self.geometry("350x210+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
+        self.geometry("400x210+"+str(self.winfo_screenwidth()/2)+"+"+str(10))   # Setting form size
         # self.attributes("-topmost", 1)   # Display at the front
         self.title("Face Sentinel")
         self.setup_form()   # setup form
@@ -51,41 +51,40 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
     def setup_form(self):
         global limit
 
-        logo_image = customtkinter.CTkImage(Image.open('Assets/FS_logo.png'),size=(64, 64))
-        self.logo_label = customtkinter.CTkLabel(master=self, text="",image=logo_image, compound="left", font=self.fonts)
-        self.logo_label.place(x=0, y=0)
+        logo_image = customtkinter.CTkImage(Image.open('Assets/FS_logo.png'),size=(250, 50))
+        self.logo_label = customtkinter.CTkLabel(master=self, text="",image=logo_image, font=self.fonts)
+        self.logo_label.place(x=67, y=4)
 
-        self.textbox = customtkinter.CTkEntry(master=self, placeholder_text="Interval Limit(sec)", width=150, font=self.fonts)
-        self.textbox.place(x=0, y=0)
-        self.button = customtkinter.CTkButton(master=self, text="Apply", width=70, command=self.apply_button_function, font=self.fonts)
-        self.button.place(x=155, y=0)
-
-        self.limit_text1 = customtkinter.CTkLabel(master=self, text="Limit: ", font=self.fonts)
-        self.limit_text1.place(x=250, y=0)
-        self.limit_text2 = customtkinter.CTkLabel(master=self, text=str(limit), font=self.fonts)
-        self.limit_text2.place(x=300, y=0)
+        self.textbox = customtkinter.CTkEntry(master=self, placeholder_text="Interval: " + str(limit) + "s", width=120, font=self.fonts)
+        self.textbox.place(x=5, y=60)
+        self.button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.apply_button_function, font=self.fonts)
+        self.button.place(x=130, y=60)
 
         self.rigidity_textbox = customtkinter.CTkEntry(master=self, placeholder_text="Rigidity:" + str(rigidity) + "%", width=120, font=self.fonts)
-        self.rigidity_textbox.place(x=0, y=30)
+        self.rigidity_textbox.place(x=5, y=95)
         self.rigidity_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.rigidity_apply_button_function, font=self.fonts)
-        self.rigidity_apply_button.place(x=120, y=30)
+        self.rigidity_apply_button.place(x=130, y=95)
 
         self.threshold_textbox = customtkinter.CTkEntry(master=self, placeholder_text="Threshold:" + str(threshold), width=120, font=self.fonts)
-        self.threshold_textbox.place(x=175, y=30)
+        self.threshold_textbox.place(x=5, y=130)
         self.threshold_apply_button = customtkinter.CTkButton(master=self, text="Apply", width=50, command=self.threshold_apply_button_function, font=self.fonts)
-        self.threshold_apply_button.place(x=295, y=30)
+        self.threshold_apply_button.place(x=130, y=130)
 
-        self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="Last Rigidity: ", font=self.fonts)
-        self.last_rigidity_text.place(x=0, y=60)
+        self.tolerate_target_face__errors_toggle_button = customtkinter.CTkButton(master=self, text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)), width=175, command=self.tolerate_target_face__errors_toggle_button_function, font=self.fonts)
+        self.tolerate_target_face__errors_toggle_button.place(x=5, y=165)
+
+
+        self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="Last Pass Rate: ", font=self.fonts)
+        self.last_rigidity_text.place(x=210, y=60)
 
         self.ave_threshold_text = customtkinter.CTkLabel(master=self, text="Ave Threshold: ", font=self.fonts)
-        self.ave_threshold_text.place(x=175, y=60)
+        self.ave_threshold_text.place(x=210, y=90)
 
         self.min_threshold_text = customtkinter.CTkLabel(master=self, text="Min Threshold: ", font=self.fonts)
-        self.min_threshold_text.place(x=0, y=90)
+        self.min_threshold_text.place(x=210, y=120)
 
         self.max_threshold_text = customtkinter.CTkLabel(master=self, text="Max Threshold: ", font=self.fonts)
-        self.max_threshold_text.place(x=175, y=90)
+        self.max_threshold_text.place(x=210, y=150)
 
 
 
@@ -99,7 +98,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         self.textbox.delete(0, len(new_limit))
         if(new_limit.isdecimal()):
             limit = int(new_limit)
-            self.limit_text2.configure(text=str(new_limit))
+            self.textbox.configure(placeholder_text="Interval: " + new_limit + "s")
 
 
     def rigidity_apply_button_function(self):
@@ -128,7 +127,14 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
             self.threshold_textbox.configure(placeholder_text="Threshold:" + str(threshold))
 
 
-
+    def tolerate_target_face__errors_toggle_button_function(self):
+        global tolerate_target_face__errors
+        if(tolerate_target_face__errors == True):
+            tolerate_target_face__errors = False
+            self.tolerate_target_face__errors_toggle_button.configure(text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)))
+        else:
+            tolerate_target_face__errors = True
+            self.tolerate_target_face__errors_toggle_button.configure(text="Tolerate Face Errors: " + str(int(tolerate_target_face__errors)))
 
 
 
@@ -176,23 +182,38 @@ def interval_observe():   # keyboard input interval observer
             limit = sys.maxsize
             if(debugging): print("Limit exceeded.")
             face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Face_Checker.face_check(your_pics_dir, rigidity, threshold, debugging)
-            if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )) : lock_out()
+            if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )):
+                limit = limit_temp
+                lock_out()
             else:
                 limit = limit_temp
                 interval = 0
-                app.last_rigidity_text.configure(text="Last Rigidity: " + str(last_rigidity) + "%")
-                app.ave_threshold_text.configure(text="Ave Threshold: " + str(ave_threshold))
-                app.min_threshold_text.configure(text="Min Threshold: " + str(min_threshold))
-                app.max_threshold_text.configure(text="Max Threshold: " + str(max_threshold))
+                app.last_rigidity_text.configure(text="Last Pass Rate: " + str(last_rigidity) + "%")
+                app.ave_threshold_text.configure(text="Ave Threshold: " + str(round(ave_threshold, 5)))
+                app.min_threshold_text.configure(text="Min Threshold: " + str(round(min_threshold, 5)))
+                app.max_threshold_text.configure(text="Max Threshold: " + str(round(max_threshold, 5)))
 
 
+def exit_processes():
+    global debugging
 
+    config.set('settings', 'debugging', str(debugging))
+    config.set('settings', 'limit', str(limit))
+    config.set('settings', 'your_pics_dir', str(your_pics_dir))
+    config.set('settings', 'tolerate_target_face__errors', str(tolerate_target_face__errors))
+    config.set('settings', 'rigidity', str(rigidity))
+    config.set('settings', 'threshold', str(threshold))
+    with open('./config.ini', 'w') as f:
+        config.write(f)
+    if(debugging): print("Config.ini Saved")
+    app.destroy()
+    sys.exit()
 
 
 def lock_out():   # lock out from windows user session
     if(debugging) : print("Log Off Function Triggered.")
     subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
-    app.quit()
+    exit_processes()
 
 
 def Windows_Hello_Authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
@@ -205,21 +226,6 @@ def Windows_Hello_Authorization(): # Windows Security Challenge Function, It cal
     return result
 
 
-
-def config_save():
-    global debugging
-
-    config.set('settings', 'debugging', str(debugging))
-    config.set('settings', 'limit', str(limit))
-    config.set('settings', 'your_pics_dir', str(your_pics_dir))
-    config.set('settings', 'tolerate_target_face__errors', str(tolerate_target_face__errors))
-    config.set('settings', 'rigidity', str(rigidity))
-    config.set('settings', 'threshold', str(threshold))
-    with open('./config.ini', 'w') as f:
-        config.write(f)
-    if(debugging): print("Config.ini Saved")
-
-
 def create_menu():
     app.withdraw()
     def show_app():
@@ -227,9 +233,8 @@ def create_menu():
 
     def destroy_app():
         if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
-        config_save()
-        app.destroy()
-        sys.exit()
+        exit_processes()
+        
         
     menu=(item('Show', show_app), item('Quit', destroy_app))
     icon=pystray.Icon("name", Image.open('Assets/headandlock.ico'), "My System Tray Icon", menu)
