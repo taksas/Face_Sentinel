@@ -105,7 +105,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global limit
         
-        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+        if(windows_hello_authorization() != 0): return # Windows Security Challenge
 
         new_limit = self.textbox.get()
         self.textbox.delete(0, len(new_limit))
@@ -118,7 +118,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global rigidity
         
-        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+        if(windows_hello_authorization() != 0): return # Windows Security Challenge
 
         new_rigidity = self.rigidity_textbox.get()
         self.rigidity_textbox.delete(0, len(new_rigidity))
@@ -131,7 +131,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global threshold
         
-        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+        if(windows_hello_authorization() != 0): return # Windows Security Challenge
 
         new_threshold = self.threshold_textbox.get()
         self.threshold_textbox.delete(0, len(new_threshold))
@@ -142,7 +142,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
     def tolerate_target_face__errors_toggle_button_function(self):
         global tolerate_target_face__errors
-        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+        if(windows_hello_authorization() != 0): return # Windows Security Challenge
         if(tolerate_target_face__errors == True):
             tolerate_target_face__errors = False
         else:
@@ -193,7 +193,7 @@ def interval_observe():   # keyboard input interval observer
         if(interval >= limit):
             interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
-            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Main_Authorization.Authorization(your_pics_dir, capture_pics_dir, rigidity, threshold, debugging)
+            face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Main_Authorization.authorization(your_pics_dir, capture_pics_dir, rigidity, threshold, debugging)
             if(face_check_result == 1 or ( face_check_result == -2 and tolerate_target_face__errors == False )):
                 interval = 0
                 lock_out()
@@ -229,7 +229,7 @@ def lock_out():   # lock out from windows user session
     exit_processes()
 
 
-def Windows_Hello_Authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
+def windows_hello_authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
     global debugging
     
     auth = auth_api.WBF_API_Class()
@@ -245,7 +245,7 @@ def create_menu():
         app.deiconify()
 
     def destroy_app():
-        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
+        if(windows_hello_authorization() != 0): return # Windows Security Challenge
         exit_processes()
         
         
