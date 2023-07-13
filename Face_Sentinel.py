@@ -10,6 +10,7 @@ from PIL import Image
 import configparser
 from distutils.util import strtobool
 import datetime
+from playsound import playsound
 
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
@@ -189,7 +190,7 @@ def interval_observe():   # keyboard input interval observer
 
     while True:
         time.sleep(1)
-        if(interval > limit):
+        if(interval >= limit):
             interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
             face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Main_Authorization.Authorization(your_pics_dir, capture_pics_dir, rigidity, threshold, debugging)
@@ -223,6 +224,7 @@ def exit_processes():
 
 def lock_out():   # lock out from windows user session
     if(debugging) : print("Log Off Function Triggered.")
+    playsound("./Assets/alert.mp3")
     subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
     exit_processes()
 
