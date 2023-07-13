@@ -11,6 +11,7 @@ import configparser
 from distutils.util import strtobool
 import datetime
 from playsound import playsound
+from pathlib import Path
 
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
@@ -224,7 +225,7 @@ def exit_processes():
 
 def lock_out():   # lock out from windows user session
     if(debugging) : print("Log Off Function Triggered.")
-    playsound("./Assets/alert.mp3")
+    playsound(Path(__file__).resolve().parent.joinpath("Assets\\alert.mp3"))
     subprocess.call('rundll32.exe user32.dll,LockWorkStation', shell=True)
     exit_processes()
 
