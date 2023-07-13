@@ -141,6 +141,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
     def tolerate_target_face__errors_toggle_button_function(self):
         global tolerate_target_face__errors
+        if(Windows_Hello_Authorization() != 0): return # Windows Security Challenge
         if(tolerate_target_face__errors == True):
             tolerate_target_face__errors = False
         else:
