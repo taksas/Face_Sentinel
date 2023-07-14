@@ -15,7 +15,8 @@ from pathlib import Path
 from tendo import singleton
 
 clr.AddReference("WBF_API_ClassLibrary")
-import WBF_API_ClassLibrary as auth_api
+import WBF_API_ClassLibrary as WBF_API
+wbf_api = WBF_API.WBF_API_Class()
 import Main_Authorization
 
 
@@ -194,6 +195,9 @@ def interval_observe():   # keyboard input interval observer
     while True:
         time.sleep(1)
         if(interval >= limit):
+            if(debugging): print("lock_state: ", wbf_api.IsWorkstationLocked())
+            if(wbf_api.IsWorkstationLocked() == 1): exit_processes()
+
             interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
             face_check_result, last_rigidity, ave_threshold, min_threshold, max_threshold = Main_Authorization.authorization(your_pics_dir, capture_pics_dir, rigidity, threshold, debugging)
@@ -235,8 +239,7 @@ def lock_out():   # lock out from windows user session
 def windows_hello_authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
     global debugging
     
-    auth = auth_api.WBF_API_Class()
-    result = auth.Authorization()
+    result = wbf_api.authorization()
 
     if(debugging): print("call_auth_result :",result)
     return result
