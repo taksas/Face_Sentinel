@@ -88,21 +88,31 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
 
         # --- log widgets ---
-        self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="Last Pass Rate: ", font=self.fonts)
-        self.last_rigidity_text.place(x=210, y=60)
+        self.last_rigidity_title = customtkinter.CTkLabel(master=self, text="Last Pass Rate: ", font=self.fonts)
+        self.last_rigidity_title.place(x=210, y=60)
+        self.last_rigidity_text = customtkinter.CTkLabel(master=self, text="", font=self.fonts)
+        self.last_rigidity_text.place(x=325, y=60)
 
-        self.ave_threshold_text = customtkinter.CTkLabel(master=self, text="Ave Similarity: ", font=self.fonts)
-        self.ave_threshold_text.place(x=210, y=90)
+        self.ave_threshold_title = customtkinter.CTkLabel(master=self, text="Ave Similarity: ", font=self.fonts)
+        self.ave_threshold_title.place(x=210, y=90)
+        self.ave_threshold_text = customtkinter.CTkLabel(master=self, text="", font=self.fonts)
+        self.ave_threshold_text.place(x=325, y=90)
 
-        self.min_threshold_text = customtkinter.CTkLabel(master=self, text="Min Similarity: ", font=self.fonts)
-        self.min_threshold_text.place(x=210, y=120)
+        self.min_threshold_title = customtkinter.CTkLabel(master=self, text="Min Similarity: ", font=self.fonts)
+        self.min_threshold_title.place(x=210, y=120)
+        self.min_threshold_text = customtkinter.CTkLabel(master=self, text="", font=self.fonts)
+        self.min_threshold_text.place(x=325, y=120)
 
-        self.max_threshold_text = customtkinter.CTkLabel(master=self, text="Max Similarity: ", font=self.fonts)
-        self.max_threshold_text.place(x=210, y=150)
+        self.max_threshold_title = customtkinter.CTkLabel(master=self, text="Max Similarity: ", font=self.fonts)
+        self.max_threshold_title.place(x=210, y=150)
+        self.max_threshold_text = customtkinter.CTkLabel(master=self, text="", font=self.fonts)
+        self.max_threshold_text.place(x=325, y=150)
 
-        self.last_updated_text = customtkinter.CTkLabel(master=self, text="Last Updated: ", font=self.fonts)
-        self.last_updated_text.place(x=210, y=180)
-        # --- log widgets ---
+        self.last_updated_title = customtkinter.CTkLabel(master=self, text="Last Updated: ", font=self.fonts)
+        self.last_updated_title.place(x=210, y=180)
+        self.last_updated_text = customtkinter.CTkLabel(master=self, text="", font=self.fonts)
+        self.last_updated_text.place(x=325, y=180)
+        # -------------------
 
 
 
@@ -196,9 +206,9 @@ def interval_observe():   # keyboard input interval observer
     while True:
         time.sleep(1)
         if(interval >= limit):
-            Windows_lock_state = bool(Process.GetProcessesByName("logonui"))
-            if(debugging): print("lock_state: ", Windows_lock_state)
-            if(Windows_lock_state == 1): exit_processes()
+            windows_lock_state = bool(Process.GetProcessesByName("logonui"))
+            if(debugging): print("lock_state: ", windows_lock_state)
+            if(windows_lock_state == 1): exit_processes()
 
             interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
@@ -208,11 +218,11 @@ def interval_observe():   # keyboard input interval observer
                 lock_out()
             else:
                 interval = 0
-                app.last_rigidity_text.configure(text="Last Pass Rate: " + str(last_rigidity) + "%")
-                app.ave_threshold_text.configure(text="Ave Similarity: " + str(round(ave_threshold, 5)))
-                app.min_threshold_text.configure(text="Min Similarity: " + str(round(min_threshold, 5)))
-                app.max_threshold_text.configure(text="Max Similarity: " + str(round(max_threshold, 5)))
-                app.last_updated_text.configure(text="Last Updated: " + datetime.datetime.now().strftime('%H:%M.%S'))
+                app.last_rigidity_text.configure(text=str(last_rigidity) + "%")
+                app.ave_threshold_text.configure(text=str(round(ave_threshold, 5)))
+                app.min_threshold_text.configure(text=str(round(min_threshold, 5)))
+                app.max_threshold_text.configure(text=str(round(max_threshold, 5)))
+                app.last_updated_text.configure(text=datetime.datetime.now().strftime('%H:%M.%S'))
 
 
 def exit_processes():
