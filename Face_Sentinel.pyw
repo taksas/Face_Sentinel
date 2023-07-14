@@ -195,8 +195,9 @@ def interval_observe():   # keyboard input interval observer
     while True:
         time.sleep(1)
         if(interval >= limit):
-            if(debugging): print("lock_state: ", wbf_api.IsWorkstationLocked())
-            if(wbf_api.IsWorkstationLocked() == 1): exit_processes()
+            Windows_lock_state = wbf_api.IsWorkstationLocked()
+            if(debugging): print("lock_state: ", Windows_lock_state)
+            if(Windows_lock_state == 1): exit_processes()
 
             interval = -(sys.maxsize-10)
             if(debugging): print("Limit exceeded.")
