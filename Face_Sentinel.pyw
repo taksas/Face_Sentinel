@@ -227,6 +227,7 @@ def exit_processes():
         config.write(f)
     if(debugging): print("Config.ini Saved")
     app.destroy()
+    time.sleep(3)
     sys.exit()
 
 
