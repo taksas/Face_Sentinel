@@ -1,0 +1,1 @@
+customtkinter pystray Pillow configparser playsound pythonnet matplotlib face_recognition opencv-python
