@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\TAKUMI\\source\\repos\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj": {}
+    "C:\\Users\\TAKUMI\\CSSS-EXPR1\\Face_Sentinel\\Libraries\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj": {}
   },
   "projects": {
-    "C:\\Users\\TAKUMI\\source\\repos\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj": {
+    "C:\\Users\\TAKUMI\\CSSS-EXPR1\\Face_Sentinel\\Libraries\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\TAKUMI\\source\\repos\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj",
+        "projectUniqueName": "C:\\Users\\TAKUMI\\CSSS-EXPR1\\Face_Sentinel\\Libraries\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj",
         "projectName": "WBF_API_ClassLibrary",
-        "projectPath": "C:\\Users\\TAKUMI\\source\\repos\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj",
+        "projectPath": "C:\\Users\\TAKUMI\\CSSS-EXPR1\\Face_Sentinel\\Libraries\\WBF_API_ClassLibrary\\WBF_API_ClassLibrary.csproj",
         "packagesPath": "C:\\Users\\TAKUMI\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\TAKUMI\\source\\repos\\WBF_API_ClassLibrary\\obj\\",
+        "outputPath": "C:\\Users\\TAKUMI\\CSSS-EXPR1\\Face_Sentinel\\Libraries\\WBF_API_ClassLibrary\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "fallbackFolders": [
