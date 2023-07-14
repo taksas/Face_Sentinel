@@ -3,7 +3,7 @@
 
 
 ## 初回設定
-- Pythonの実行環境があること
+- Pythonの実行環境があること（Python 3.11.4で動作確認）
 - `dependencies.txt`を使用して、必要なライブラリをインストールしていること
 - `config_sample.ini`をコピーして`config.ini`を作成、内容の編集
 
