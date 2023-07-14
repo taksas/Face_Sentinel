@@ -19,7 +19,8 @@ import WBF_API_ClassLibrary as auth_api
 import Main_Authorization
 
 
-me = singleton.SingleInstance()
+me = singleton.SingleInstance()   # Prevents multiple startups
+
 
 # ------ Configure -------
 config = configparser.ConfigParser()
