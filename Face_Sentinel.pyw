@@ -13,10 +13,11 @@ import datetime
 from playsound import playsound
 from pathlib import Path
 from tendo import singleton
+import winsdk.windows.security.credentials.ui as wscu
+import asyncio
 
-clr.AddReference("WBF_API_ClassLibrary")
-import WBF_API_ClassLibrary as WBF_API
-wbf_api = WBF_API.WBF_API_Class()
+clr.AddReference("System.Diagnostics.Process")
+from System.Diagnostics import Process
 import Main_Authorization
 
 
@@ -109,7 +110,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global limit
         
-        if(windows_hello_authorization() != 0): return # Windows Security Challenge
+        if(asyncio.run(windows_hello_authorization()) != 0): return # Windows Security Challenge
 
         new_limit = self.textbox.get()
         self.textbox.delete(0, len(new_limit))
@@ -122,7 +123,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global rigidity
         
-        if(windows_hello_authorization() != 0): return # Windows Security Challenge
+        if(asyncio.run(windows_hello_authorization()) != 0): return # Windows Security Challenge
 
         new_rigidity = self.rigidity_textbox.get()
         self.rigidity_textbox.delete(0, len(new_rigidity))
@@ -135,7 +136,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
         global debugging
         global threshold
         
-        if(windows_hello_authorization() != 0): return # Windows Security Challenge
+        if(asyncio.run(windows_hello_authorization()) != 0): return # Windows Security Challenge
 
         new_threshold = self.threshold_textbox.get()
         self.threshold_textbox.delete(0, len(new_threshold))
@@ -146,7 +147,7 @@ class App(customtkinter.CTk):   # CustomTKinter (GUI) Class
 
     def tolerate_target_face__errors_toggle_button_function(self):
         global tolerate_target_face__errors
-        if(windows_hello_authorization() != 0): return # Windows Security Challenge
+        if(asyncio.run(windows_hello_authorization()) != 0): return # Windows Security Challenge
         if(tolerate_target_face__errors == True):
             tolerate_target_face__errors = False
         else:
@@ -195,7 +196,7 @@ def interval_observe():   # keyboard input interval observer
     while True:
         time.sleep(1)
         if(interval >= limit):
-            Windows_lock_state = wbf_api.IsWorkstationLocked()
+            Windows_lock_state = bool(Process.GetProcessesByName("logonui"))
             if(debugging): print("lock_state: ", Windows_lock_state)
             if(Windows_lock_state == 1): exit_processes()
 
@@ -240,13 +241,19 @@ def lock_out():   # lock out from windows user session
     exit_processes()
 
 
-def windows_hello_authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
+async def windows_hello_authorization(): # Windows Security Challenge Function, It calls C#(.NET Framework) DLL from same dir.
     global debugging
-    
-    result = wbf_api.authorization()
-
-    if(debugging): print("call_auth_result :",result)
-    return result
+    available = await wscu.UserConsentVerifier.check_availability_async()
+    print("wscu:",available)
+    if (available ==  wscu.UserConsentVerifierAvailability.AVAILABLE):
+        result = await wscu.UserConsentVerifier.request_verification_async("Authorization Started")
+        print("wscu_result:",result)
+        if (result == wscu.UserConsentVerificationResult.VERIFIED):
+            return 0;   # OK
+        else:
+            return 1;   # NG
+    else:
+        return -1;   # Error
 
 
 def create_menu():
@@ -255,7 +262,7 @@ def create_menu():
         app.deiconify()
 
     def destroy_app():
-        if(windows_hello_authorization() != 0): return # Windows Security Challenge
+        if(asyncio.run(windows_hello_authorization()) != 0): return # Windows Security Challenge
         exit_processes()
         
         
