@@ -12,13 +12,14 @@ from distutils.util import strtobool
 import datetime
 from playsound import playsound
 from pathlib import Path
+from tendo import singleton
 
 clr.AddReference("WBF_API_ClassLibrary")
 import WBF_API_ClassLibrary as auth_api
 import Main_Authorization
 
 
-
+me = singleton.SingleInstance()
 
 # ------ Configure -------
 config = configparser.ConfigParser()
