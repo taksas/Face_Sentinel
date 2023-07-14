@@ -246,7 +246,7 @@ async def windows_hello_authorization(): # Windows Security Challenge Function, 
     available = await wscu.UserConsentVerifier.check_availability_async()
     print("wscu:",available)
     if (available ==  wscu.UserConsentVerifierAvailability.AVAILABLE):
-        result = await wscu.UserConsentVerifier.request_verification_async("Authorization Started")
+        result = await wscu.UserConsentVerifier.request_verification_async("Face Sentinel requires additional authentication.")
         print("wscu_result:",result)
         if (result == wscu.UserConsentVerificationResult.VERIFIED):
             return 0;   # OK
