@@ -234,7 +234,7 @@ app = App()
 # ------------------------
 
 
-def Debugging_Point():  # debugging point
+def debugging_point():  # debugging point
     time.sleep(20)
     print("debug")  # SET BREAK POINT HERE
 
@@ -369,7 +369,7 @@ def on_closing():
 
 if __name__ == "__main__":
     if debugging:
-        debugging_thread = threading.Thread(target=Debugging_Point)  # debugging point
+        debugging_thread = threading.Thread(target=debugging_point)  # debugging point
         debugging_thread.setDaemon(True)
         debugging_thread.start()
 
