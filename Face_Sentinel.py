@@ -40,6 +40,11 @@ threshold = float((config["settings"]["threshold"]))
 # ------------------------
 
 
+# --- Global Variables ---
+tolerate_target_face__errors_text = ["撮影時エラーを許容しない", "撮影時エラーを許容する"]
+# ------------------------
+
+
 class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
     def __init__(self):
         super().__init__()
@@ -54,6 +59,7 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
 
     def setup_form(self):
         global limit
+        global tolerate_target_face__errors
 
         # main logo
         logo_image = customtkinter.CTkImage(
@@ -81,23 +87,6 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
         )
         self.button.place(x=130, y=60)
 
-        # rigidity widgets
-        self.rigidity_textbox = customtkinter.CTkEntry(
-            master=self,
-            placeholder_text="判定閾値:" + str(rigidity) + "%",
-            width=120,
-            font=self.fonts,
-        )
-        self.rigidity_textbox.place(x=5, y=95)
-        self.rigidity_apply_button = customtkinter.CTkButton(
-            master=self,
-            text="適用",
-            width=50,
-            command=self.rigidity_apply_button_function,
-            font=self.fonts,
-        )
-        self.rigidity_apply_button.place(x=130, y=95)
-
         # threshold widgets
         self.threshold_textbox = customtkinter.CTkEntry(
             master=self,
@@ -105,7 +94,7 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
             width=120,
             font=self.fonts,
         )
-        self.threshold_textbox.place(x=5, y=130)
+        self.threshold_textbox.place(x=5, y=95)
         self.threshold_apply_button = customtkinter.CTkButton(
             master=self,
             text="適用",
@@ -113,12 +102,29 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
             command=self.threshold_apply_button_function,
             font=self.fonts,
         )
-        self.threshold_apply_button.place(x=130, y=130)
+        self.threshold_apply_button.place(x=130, y=95)
+
+        # rigidity widgets
+        self.rigidity_textbox = customtkinter.CTkEntry(
+            master=self,
+            placeholder_text="判定閾値:" + str(rigidity) + "%",
+            width=120,
+            font=self.fonts,
+        )
+        self.rigidity_textbox.place(x=5, y=130)
+        self.rigidity_apply_button = customtkinter.CTkButton(
+            master=self,
+            text="適用",
+            width=50,
+            command=self.rigidity_apply_button_function,
+            font=self.fonts,
+        )
+        self.rigidity_apply_button.place(x=130, y=130)
 
         # tolerate face errors widget
         self.tolerate_target_face__errors_toggle_button = customtkinter.CTkButton(
             master=self,
-            text="撮影時エラーを許容:" + str(int(tolerate_target_face__errors)),
+            text=tolerate_target_face__errors_text[int(tolerate_target_face__errors)],
             width=175,
             command=self.tolerate_target_face__errors_toggle_button_function,
             font=self.fonts,
@@ -126,41 +132,41 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
         self.tolerate_target_face__errors_toggle_button.place(x=5, y=165)
 
         # --- log widgets ---
-        self.last_rigidity_title = customtkinter.CTkLabel(
-            master=self, text="直近判定結果: ", font=self.fonts
-        )
-        self.last_rigidity_title.place(x=210, y=60)
-        self.last_rigidity_text = customtkinter.CTkLabel(
-            master=self, text="", font=self.fonts
-        )
-        self.last_rigidity_text.place(x=325, y=60)
-
         self.ave_threshold_title = customtkinter.CTkLabel(
             master=self, text="平均 類似度: ", font=self.fonts
         )
-        self.ave_threshold_title.place(x=210, y=90)
+        self.ave_threshold_title.place(x=210, y=60)
         self.ave_threshold_text = customtkinter.CTkLabel(
             master=self, text="", font=self.fonts
         )
-        self.ave_threshold_text.place(x=325, y=90)
+        self.ave_threshold_text.place(x=325, y=60)
 
         self.min_threshold_title = customtkinter.CTkLabel(
             master=self, text="最良 類似度: ", font=self.fonts
         )
-        self.min_threshold_title.place(x=210, y=120)
+        self.min_threshold_title.place(x=210, y=90)
         self.min_threshold_text = customtkinter.CTkLabel(
             master=self, text="", font=self.fonts
         )
-        self.min_threshold_text.place(x=325, y=120)
+        self.min_threshold_text.place(x=325, y=90)
 
         self.max_threshold_title = customtkinter.CTkLabel(
             master=self, text="最悪 類似度: ", font=self.fonts
         )
-        self.max_threshold_title.place(x=210, y=150)
+        self.max_threshold_title.place(x=210, y=120)
         self.max_threshold_text = customtkinter.CTkLabel(
             master=self, text="", font=self.fonts
         )
-        self.max_threshold_text.place(x=325, y=150)
+        self.max_threshold_text.place(x=325, y=120)
+
+        self.last_rigidity_title = customtkinter.CTkLabel(
+            master=self, text="合格判定率: ", font=self.fonts
+        )
+        self.last_rigidity_title.place(x=210, y=150)
+        self.last_rigidity_text = customtkinter.CTkLabel(
+            master=self, text="", font=self.fonts
+        )
+        self.last_rigidity_text.place(x=325, y=150)
 
         self.last_updated_title = customtkinter.CTkLabel(
             master=self, text="最終更新時間: ", font=self.fonts
@@ -185,20 +191,6 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
             limit = int(new_limit)
             self.textbox.configure(placeholder_text="動作間隔: " + new_limit + "s")
 
-    def rigidity_apply_button_function(self):
-        global debugging
-        global rigidity
-
-        if asyncio.run(windows_hello_authorization()) != 0:
-            return  # Windows Security Challenge
-
-        new_rigidity = self.rigidity_textbox.get()
-        self.rigidity_textbox.delete(0, len(new_rigidity))
-        if new_rigidity.isdecimal():
-            rigidity = int(new_rigidity)
-            self.rigidity_textbox.configure(
-                placeholder_text="判定閾値:" + str(rigidity) + "%"
-            )
 
     def threshold_apply_button_function(self):
         global debugging
@@ -215,6 +207,23 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
                 placeholder_text="類似度閾値:" + str(threshold)
             )
 
+
+    def rigidity_apply_button_function(self):
+        global debugging
+        global rigidity
+
+        if asyncio.run(windows_hello_authorization()) != 0:
+            return  # Windows Security Challenge
+
+        new_rigidity = self.rigidity_textbox.get()
+        self.rigidity_textbox.delete(0, len(new_rigidity))
+        if new_rigidity.isdecimal():
+            rigidity = int(new_rigidity)
+            self.rigidity_textbox.configure(
+                placeholder_text="判定閾値:" + str(rigidity) + "%"
+            )
+
+
     def tolerate_target_face__errors_toggle_button_function(self):
         global tolerate_target_face__errors
         if asyncio.run(windows_hello_authorization()) != 0:
@@ -224,7 +233,7 @@ class App(customtkinter.CTk):  # CustomTKinter (GUI) Class
         else:
             tolerate_target_face__errors = True
         self.tolerate_target_face__errors_toggle_button.configure(
-            text="撮影時エラーを許容:" + str(int(tolerate_target_face__errors))
+            text=tolerate_target_face__errors_text[int(tolerate_target_face__errors)]
         )
 
 
