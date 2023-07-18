@@ -40,7 +40,11 @@ config.iniには以下の7つのパラメータが必要であり、かつFace S
 `your_pics_dir`、`capture_pics_dir`も同じアクセス権限にすることをお勧めします。
 
 
-## ファイルの実行
-`Face_Sentinel.pyw`を実行してください。
+## ソフトの起動
+`Face_Sentinel.py`を実行してください。
 
 実行中にWindowsがロック画面に移行したりFSによるロックが行われた場合、動作を終了します。
+
+
+## Face Sentinelについて
+このソフトは香川大学の講義、[情報システム・セキュリティ実験I](https://www2.st.kagawa-u.ac.jp/Portal/Public/Syllabus/DetailMain.aspx?lct_year=2023&lct_cd=5005310)のハッカソンでの制作物として制作されました。
