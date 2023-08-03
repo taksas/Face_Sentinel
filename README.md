@@ -3,6 +3,7 @@
 
 ## 受賞歴
 香川大学の講義、[情報システム・セキュリティ実験I](https://www2.st.kagawa-u.ac.jp/Portal/Public/Syllabus/DetailMain.aspx?lct_year=2023&lct_cd=5005310)で行われたハッカソンで岡崎TA賞を受賞しました。
+
 詳細は[こちら](https://taksas.net/face_sentinel)
 
 ## 初回設定
