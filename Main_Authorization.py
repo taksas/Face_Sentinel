@@ -1,8 +1,39 @@
 import face_recognition
-import matplotlib.pyplot as plt
 import glob
 import cv2
 import datetime
+
+known_face_encodings = []
+
+
+def known_pics_prepare(your_pics_dir, debugging):
+    # Load Known Faces
+    path_list = glob.glob(your_pics_dir + "\*")
+    known_face_imgs = []
+    for path in path_list:
+        img = face_recognition.load_image_file(path)
+        known_face_imgs.append(img)
+    if debugging:
+        print("Loaded Known Images:", path_list)
+    if(len(path_list) == 0): return -2
+
+    # face detection
+    known_face_locs = []
+    for img in known_face_imgs:
+        loc = face_recognition.face_locations(img, model="hog")
+        if len(loc) != 1:
+            if debugging:
+                print("Known Face Analyzation Error")
+            return -2
+        known_face_locs.append(loc)
+
+    # face recognition
+    global known_face_encodings
+    for img, loc in zip(known_face_imgs, known_face_locs):
+        (encoding,) = face_recognition.face_encodings(img, loc)
+        known_face_encodings.append(encoding)
+    
+    return 0
 
 
 def camera_capture(capture_pics_dir):
@@ -24,29 +55,13 @@ def camera_capture(capture_pics_dir):
 
 
 def authorization(your_pics_dir, capture_pics_dir, rigidity, threshold, debugging):
-    # Load Known Faces
-    path_list = glob.glob(your_pics_dir + "\*")
-    known_face_imgs = []
-    for path in path_list:
-        img = face_recognition.load_image_file(path)
-        known_face_imgs.append(img)
-    if debugging:
-        print("Loaded Known Images:", path_list)
+    
 
     # Load Captured Target Face
     target_image = camera_capture(capture_pics_dir)
     face_img_to_check = face_recognition.load_image_file(target_image)
 
     # face detection
-    known_face_locs = []
-    for img in known_face_imgs:
-        loc = face_recognition.face_locations(img, model="hog")
-        if len(loc) != 1:
-            if debugging:
-                print("Known Face Analyzation Error")
-            return -1, -1, -1, -1, -1
-        known_face_locs.append(loc)
-
     face_loc_to_check = face_recognition.face_locations(face_img_to_check, model="hog")
     if len(face_loc_to_check) != 1:
         if debugging:
@@ -54,15 +69,12 @@ def authorization(your_pics_dir, capture_pics_dir, rigidity, threshold, debuggin
         return -2, -1, -1, -1, -1
 
     # face recognition
-    known_face_encodings = []
-    for img, loc in zip(known_face_imgs, known_face_locs):
-        (encoding,) = face_recognition.face_encodings(img, loc)
-        known_face_encodings.append(encoding)
-
     (face_encoding_to_check,) = face_recognition.face_encodings(
         face_img_to_check, face_loc_to_check
     )
 
+    #check difficulty
+    global known_face_encodings
     dists = face_recognition.face_distance(
         known_face_encodings, face_encoding_to_check
     )  # check similarity level

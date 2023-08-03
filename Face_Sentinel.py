@@ -10,11 +10,11 @@ from PIL import Image
 import configparser
 from distutils.util import strtobool
 import datetime
-from playsound import playsound
 from pathlib import Path
 from tendo import singleton
 import winsdk.windows.security.credentials.ui as wscu
 import asyncio
+import winsound
 
 clr.AddReference("System.Diagnostics.Process")
 from System.Diagnostics import Process
@@ -39,6 +39,9 @@ rigidity = int((config["settings"]["rigidity"]))
 threshold = float((config["settings"]["threshold"]))
 # ------------------------
 
+known_image_preparation = Main_Authorization.known_pics_prepare(your_pics_dir, debugging)
+if(known_image_preparation == -2 and tolerate_target_face__errors == False):
+    sys.exit()
 
 # --- Global Variables ---
 tolerate_target_face__errors_text = ["撮影時エラーを許容しない", "撮影時エラーを許容する"]
@@ -328,7 +331,7 @@ def exit_processes():
 def lock_out():  # lock out from windows user session
     if debugging:
         print("Log Off Function Triggered.")
-    playsound(Path(__file__).resolve().parent.joinpath("Assets\\alert.mp3"))
+    winsound.Beep(3000, 500)
     subprocess.call("rundll32.exe user32.dll,LockWorkStation", shell=True)
     exit_processes()
 
